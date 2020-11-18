@@ -22,7 +22,7 @@ public enum PolyZoomLayer implements IPolyAreaTransformer1
         switch ((x & 1) | ((y & 1) << 1) | ((z & 1) << 2)) // (Z Y X)
         {
             case 0b000:
-                return area.get(px, py, pz);
+                return parent;
             case 0b001:
                 return choose2(context, parent, area.get(px + 1, py, pz));
             case 0b010:

@@ -25,7 +25,7 @@ import net.dries007.tfc.world.noise.WorleyNoise3D;
 
 public class WorleyCaveCarver extends WorldCarver<WorleyCaveConfig> implements IContextCarver
 {
-    private final AirBlockCarver blockCarver;
+    private final BlockCarver blockCarver;
 
     private long cachedSeed;
     private INoise3D caveNoiseWorley;
@@ -35,7 +35,7 @@ public class WorleyCaveCarver extends WorldCarver<WorleyCaveConfig> implements I
     {
         super(codec, 255);
 
-        blockCarver = new AirBlockCarver();
+        blockCarver = new LocalWaterLevelCarver();
         cachedSeed = 0;
         initialized = false;
     }

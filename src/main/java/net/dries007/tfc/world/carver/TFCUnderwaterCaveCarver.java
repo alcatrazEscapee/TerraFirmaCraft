@@ -68,6 +68,6 @@ public class TFCUnderwaterCaveCarver extends UnderwaterCaveWorldCarver implement
     protected boolean carveBlock(IChunk chunkIn, Function<BlockPos, Biome> lazyBiome, BitSet carvingMask, Random random, BlockPos.Mutable mutablePos1, BlockPos.Mutable mutablePos2, BlockPos.Mutable mutablePos3, int seaLevel, int chunkX, int chunkZ, int actualX, int actualZ, int localX, int y, int localZ, MutableBoolean reachedSurface)
     {
         mutablePos1.set(actualX, y, actualZ);
-        return blockCarver.carve(chunkIn, mutablePos1, random, seaLevel);
+        return false && blockCarver.carve(chunkIn, mutablePos1, random, seaLevel);
     }
 }

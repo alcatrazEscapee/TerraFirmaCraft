@@ -7,10 +7,10 @@ import net.dries007.tfc.world.layer.polyhedral.traits.PolyAreaLayerContext;
 import net.dries007.tfc.world.noise.NoiseUtil;
 import net.dries007.tfc.world.noise.Vec3;
 
+import static net.dries007.tfc.world.layer.polyhedral.LocalWaterLevelLayerUtil.*;
+
 public class LocalWaterRegionLayer implements IPolyAreaTransformer0
 {
-    private final int searchRadius = 1;
-    private final int normalizeFactor = 1;
     private final long seed;
 
     public LocalWaterRegionLayer(long seed)
@@ -18,13 +18,12 @@ public class LocalWaterRegionLayer implements IPolyAreaTransformer0
         this.seed = seed;
     }
 
-
     @Override
     public int apply(PolyAreaLayerContext context, int x, int y, int z)
     {
-        float fx = x * 0.02f;
-        float fy = y * 0.06f;
-        float fz = z * 0.02f;
+        float fx = x * 0.04f * 0.4f;
+        float fy = y * 0.12f * 0.3f;
+        float fz = z * 0.04f * 0.4f;
 
         int startX = NoiseUtil.fastFloor(fx);
         int startY = NoiseUtil.fastFloor(fy);
@@ -35,6 +34,7 @@ public class LocalWaterRegionLayer implements IPolyAreaTransformer0
         float distance = Float.MAX_VALUE;
         int positionHash = 0;
 
+        int searchRadius = 1;
         for (int cellX = startX - searchRadius; cellX <= startX + searchRadius; cellX++)
         {
             for (int cellY = startY - searchRadius; cellY <= startY + searchRadius; cellY++)
@@ -42,14 +42,14 @@ public class LocalWaterRegionLayer implements IPolyAreaTransformer0
                 for (int cellZ = startZ - searchRadius; cellZ <= startZ + searchRadius; cellZ++)
                 {
                     Vec3 center = NoiseUtil.CELL_3D[NoiseUtil.hash(seed, cellX, cellY, cellZ) & 255];
-                    float vecX = cellX - fx + center.x * normalizeFactor;
-                    float vecY = cellY - fy + center.y * normalizeFactor;
-                    float vecZ = cellZ - fz + center.z * normalizeFactor;
+                    float vecX = cellX - fx + center.x;
+                    float vecY = cellY - fy + center.y;
+                    float vecZ = cellZ - fz + center.z;
                     float newDistance = vecX * vecX + vecY * vecY + vecZ * vecZ;
                     if (newDistance < distance)
                     {
                         distance = newDistance;
-                        centerY = cellY + center.y * normalizeFactor;
+                        centerY = cellY + center.y;
 
                         long waterLevelSeed = FastRandom.next(seed, cellX);
                         waterLevelSeed = FastRandom.next(waterLevelSeed, cellY);
@@ -57,7 +57,7 @@ public class LocalWaterRegionLayer implements IPolyAreaTransformer0
                         waterLevelSeed = FastRandom.next(waterLevelSeed, cellX);
                         waterLevelSeed = FastRandom.next(waterLevelSeed, cellY);
                         waterLevelSeed = FastRandom.next(waterLevelSeed, cellZ);
-                        waterLevelY = (((int) waterLevelSeed) / 2147483648f) * 0.7f - 0.3f; // Bias towards no water
+                        waterLevelY = (((int) waterLevelSeed) / 2147483648f) * 0.5f - 0.4f; // Bias towards no water
 
                         positionHash = ((cellX & 0xFF) << 2) | ((cellY & 0xFF) << 10) | ((cellZ & 0xFF) << 18);
                     }
@@ -68,15 +68,15 @@ public class LocalWaterRegionLayer implements IPolyAreaTransformer0
         float localWaterY = centerY + waterLevelY;
         if (fy < localWaterY)
         {
-            return LocalWaterLevelLayerUtil.WATER | positionHash;
+            return WATER | positionHash;
         }
         else if (fy < localWaterY + 0.1f)
         {
-            return LocalWaterLevelLayerUtil.NEAR_WATER | positionHash;
+            return NEAR_WATER | positionHash;
         }
         else
         {
-            return LocalWaterLevelLayerUtil.AIR | positionHash;
+            return AIR | positionHash;
         }
     }
 }

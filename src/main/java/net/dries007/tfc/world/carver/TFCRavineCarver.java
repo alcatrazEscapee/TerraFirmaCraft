@@ -27,7 +27,7 @@ import net.dries007.tfc.world.chunkdata.RockData;
 public class TFCRavineCarver extends CanyonWorldCarver implements IContextCarver
 {
     private final Set<Block> originalCarvableBlocks;
-    private final AirBlockCarver blockCarver;
+    private final BlockCarver blockCarver;
 
     private boolean initialized;
 
@@ -35,7 +35,7 @@ public class TFCRavineCarver extends CanyonWorldCarver implements IContextCarver
     {
         super(codec);
         originalCarvableBlocks = replaceableBlocks;
-        blockCarver = new AirBlockCarver();
+        blockCarver = new LocalWaterLevelCarver();
         initialized = false;
 
         // Need to run this every time the rock registry is reloaded
