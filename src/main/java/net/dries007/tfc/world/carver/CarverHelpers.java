@@ -20,7 +20,7 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.WorldCarver;
 
 import net.dries007.tfc.mixin.world.gen.carver.ConfiguredCarverAccessor;
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.RockData;
 
 public final class CarverHelpers
 {

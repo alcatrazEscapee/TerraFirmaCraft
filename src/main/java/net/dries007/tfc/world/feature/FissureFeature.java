@@ -19,8 +19,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataProvider;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataProvider;
 
 // todo: need to reduce the frequency with which fissures are able to spawn next to eachother.
 public class FissureFeature extends Feature<BlockStateFeatureConfig>

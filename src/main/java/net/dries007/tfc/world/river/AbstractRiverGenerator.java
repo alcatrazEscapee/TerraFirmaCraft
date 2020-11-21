@@ -20,7 +20,7 @@ import net.dries007.tfc.world.noise.NoiseUtil;
 
 public abstract class AbstractRiverGenerator
 {
-    public static final int RIVER_CHUNK_RADIUS = 16; // The maximum bounding box of a river generation
+    public static final int RIVER_CHUNK_RADIUS = 8; // The maximum bounding box of a river generation
     public static final float RIVER_START_WEIGHT = 1f;
     public static final float BRANCH_CHANCE = 0.7f;
     public static final int DRAIN_RIVER_WIDTH = 20; // The width of each river at the drain element (plus or minus a range)
@@ -31,6 +31,7 @@ public abstract class AbstractRiverGenerator
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected final Map<ChunkPos, RiverStructure> generatedRiverStructures; // Positions and rivers that have been generated, cached here for efficiency
+    protected final Set<ChunkPos> failedRiverStructures;
     protected final Random random;
     protected final long seed;
 
@@ -38,7 +39,37 @@ public abstract class AbstractRiverGenerator
     {
         this.seed = seed;
         this.generatedRiverStructures = new HashMap<>();
+        this.failedRiverStructures = new HashSet<>();
         this.random = new Random();
+    }
+
+    public List<RiverStructure> generateRiversAroundChunk(ChunkPos chunkPos)
+    {
+        List<RiverStructure> rivers = new ArrayList<>();
+        for (int x = chunkPos.x - RIVER_CHUNK_RADIUS; x <= chunkPos.x + RIVER_CHUNK_RADIUS; x++)
+        {
+            for (int z = chunkPos.z - RIVER_CHUNK_RADIUS; z <= chunkPos.z + RIVER_CHUNK_RADIUS; z++)
+            {
+                ChunkPos posAt = new ChunkPos(x, z);
+                if (generatedRiverStructures.containsKey(posAt))
+                {
+                    rivers.add(generatedRiverStructures.get(posAt));
+                }
+                else if (!failedRiverStructures.contains(posAt))
+                {
+                    RiverStructure river = generateRiverAtChunk(new ChunkPos(x, z));
+                    if (river != null)
+                    {
+                        rivers.add(river);
+                    }
+                    else
+                    {
+                        failedRiverStructures.add(posAt);
+                    }
+                }
+            }
+        }
+        return rivers;
     }
 
     /**

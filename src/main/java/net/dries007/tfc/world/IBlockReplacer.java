@@ -7,7 +7,7 @@ package net.dries007.tfc.world;
 
 import net.minecraft.block.BlockState;
 
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.RockData;
 
 /**
  * Interface for block replacements.

@@ -22,6 +22,7 @@ import net.minecraft.util.registry.DynamicRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockReader;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeGenerationSettings;
@@ -34,6 +35,7 @@ import net.minecraft.world.gen.*;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.structure.StructureManager;
 import net.minecraft.world.gen.feature.template.TemplateManager;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -43,8 +45,12 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import net.dries007.tfc.mixin.world.gen.ChunkGeneratorAccessor;
 import net.dries007.tfc.world.biome.*;
 import net.dries007.tfc.world.carver.CarverHelpers;
-import net.dries007.tfc.world.chunkdata.*;
+import net.dries007.tfc.world.chunk.*;
 import net.dries007.tfc.world.noise.INoise2D;
+import net.dries007.tfc.world.river.Flow;
+import net.dries007.tfc.world.river.RiverGenerator;
+import net.dries007.tfc.world.river.RiverPiece;
+import net.dries007.tfc.world.river.RiverStructure;
 import net.dries007.tfc.world.surfacebuilder.IContextSurfaceBuilder;
 
 public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenerator
@@ -75,6 +81,7 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
 
     private final ChunkDataProvider chunkDataProvider;
     private final ChunkBlockReplacer blockReplacer;
+    private final RiverGenerator riverGenerator;
 
     // Properties set from codec
     private final TFCBiomeProvider biomeProvider;
@@ -117,6 +124,7 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
         this.chunkDataProvider = new ChunkDataProvider(new ChunkDataGenerator(seedGenerator, this.biomeProvider.getLayerSettings())); // Chunk data
         this.blockReplacer = new ChunkBlockReplacer(seedGenerator.nextLong()); // Replaces default world gen blocks with TFC variants, after surface generation
         this.biomeProvider.setChunkDataProvider(chunkDataProvider); // Allow biomes to use the chunk data temperature / rainfall variation
+        this.riverGenerator = new RiverGenerator(seedGenerator.nextLong());
     }
 
     @Override
@@ -140,7 +148,8 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
     @Override
     public void createBiomes(Registry<Biome> biomeIdRegistry, IChunk chunkIn)
     {
-        ((ChunkPrimer) chunkIn).setBiomes(new ColumnBiomeContainer(biomeIdRegistry, chunkIn.getPos(), biomeProvider));
+        // No need, as it should already be set during extended chunk info
+        // ((ChunkPrimer) chunkIn).setBiomes(new ColumnBiomeContainer(biomeIdRegistry, chunkIn.getPos(), biomeProvider));
     }
 
     /**
@@ -177,14 +186,29 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
      * This override just ignores strongholds conditionally as by default TFC does not generate them, but  {@link ChunkGenerator} hard codes them to generate.
      */
     @Override
-    public void createStructures(DynamicRegistries dynamicRegistry, StructureManager structureManager, IChunk chunk, TemplateManager templateManager, long seed)
+    public void createStructures(DynamicRegistries dynamicRegistry, StructureManager structureManager, IChunk chunkIn, TemplateManager templateManager, long seed)
     {
+        final ChunkPrimer chunk = (ChunkPrimer) chunkIn;
         final ChunkPos chunkPos = chunk.getPos();
         final Biome biome = this.biomeSource.getNoiseBiome((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
         for (Supplier<StructureFeature<?, ?>> supplier : biome.getGenerationSettings().structures())
         {
             ((ChunkGeneratorAccessor) this).invoke$createStructure(supplier.get(), dynamicRegistry, structureManager, chunk, templateManager, seed, chunkPos, biome);
         }
+    }
+
+    @Override
+    public void createReferences(ISeedReader worldIn, StructureManager structureManager, IChunk chunkIn)
+    {
+        super.createReferences(worldIn, structureManager, chunkIn);
+
+        final ChunkPrimer chunk = (ChunkPrimer) chunkIn;
+        final ChunkPos chunkPos = chunk.getPos();
+        final IWorld world = new WorldGenRegion(ServerLifecycleHooks.getCurrentServer().overworld(), Collections.singletonList(chunk));
+
+        // Early chunk setup
+        chunk.setBiomes(new ColumnBiomeContainer(worldIn.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY), chunkPos, biomeProvider));
+        sampleInitialChunkNoise(world, chunk);
     }
 
     /**
@@ -226,6 +250,43 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
         final ChunkPrimer chunk = (ChunkPrimer) chunkIn;
         final ChunkPos chunkPos = chunk.getPos();
         final SharedSeedRandom random = new SharedSeedRandom();
+        final BitSet airCarvingMask = chunk.getOrCreateCarvingMask(GenerationStage.Carving.AIR);
+        final BitSet liquidCarvingMask = chunk.getOrCreateCarvingMask(GenerationStage.Carving.LIQUID);
+        final IExtendedChunk.Info extendedChunkInfo = Objects.requireNonNull(((IExtendedChunk) chunk).getExtendedInfo(), "Chunk must have extended info set!");
+
+        random.setBaseChunkSeed(chunkPos.x, chunkPos.z);
+
+        fillInitialChunkBlocks(chunk, extendedChunkInfo.getSurfaceHeightMap());
+        updateInitialChunkHeightmaps(chunk, extendedChunkInfo.getSurfaceHeightMap());
+        carveInitialChunkBlocks(chunk, extendedChunkInfo.getCarvingCenterMap(), extendedChunkInfo.getCarvingHeightMap(), airCarvingMask, liquidCarvingMask);
+        buildHeightDependentRivers(chunk, chunkPos);
+        buildAccurateSurface(chunk, extendedChunkInfo.getLocalBiomes(), random);
+    }
+
+    @Override
+    public int getSeaLevel()
+    {
+        return SEA_LEVEL;
+    }
+
+    @Override
+    public int getBaseHeight(int x, int z, Heightmap.Type heightMapType)
+    {
+        return SEA_LEVEL;
+    }
+
+    @Override
+    public IBlockReader getBaseColumn(int x, int z)
+    {
+        return EmptyBlockReader.INSTANCE;
+    }
+
+    protected void sampleInitialChunkNoise(IWorld world, IChunk chunkIn)
+    {
+        // Initialization
+        final ChunkPrimer chunk = (ChunkPrimer) chunkIn;
+        final ChunkPos chunkPos = chunk.getPos();
+        final SharedSeedRandom random = new SharedSeedRandom();
         final int chunkX = chunkPos.getMinBlockX(), chunkZ = chunkPos.getMinBlockZ();
         final BlockPos.Mutable pos = new BlockPos.Mutable();
 
@@ -252,9 +313,6 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
         final Biome[] sampledBiomes1 = ChunkArraySampler.fillSampledArray(new Biome[24 * 24], biomeAccessor);
 
         final Mutable<Biome> mutableBiome = new MutableObject<>();
-
-        final BitSet airCarvingMask = chunk.getOrCreateCarvingMask(GenerationStage.Carving.AIR);
-        final BitSet liquidCarvingMask = chunk.getOrCreateCarvingMask(GenerationStage.Carving.LIQUID);
 
         for (int x = 0; x < 16; x++)
         {
@@ -317,28 +375,9 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
             }
         }
 
-        fillInitialChunkBlocks(chunk, surfaceHeightMap);
-        updateInitialChunkHeightmaps(chunk, surfaceHeightMap);
-        carveInitialChunkBlocks(chunk, carvingCenterMap, carvingHeightMap, airCarvingMask, liquidCarvingMask);
-        buildAccurateSurface(chunk, localBiomes, random);
-    }
-
-    @Override
-    public int getSeaLevel()
-    {
-        return SEA_LEVEL;
-    }
-
-    @Override
-    public int getBaseHeight(int x, int z, Heightmap.Type heightMapType)
-    {
-        return SEA_LEVEL;
-    }
-
-    @Override
-    public IBlockReader getBaseColumn(int x, int z)
-    {
-        return EmptyBlockReader.INSTANCE;
+        // Record info to be accessed later
+        IExtendedChunk extendedChunk = (IExtendedChunk) chunk;
+        extendedChunk.setExtendedInfo(new IExtendedChunk.Info(localBiomes, surfaceHeightMap, carvingCenterMap, carvingHeightMap));
     }
 
     protected double calculateNoiseColumn(Object2DoubleMap<Biome> weightMap, Function<Biome, BiomeVariants> variantsAccessor, Function<BiomeVariants, BiomeVariants> variantsFilter, int x, int z, Mutable<Biome> mutableBiome)
@@ -553,6 +592,33 @@ public class TFCChunkGenerator extends ChunkGenerator implements ITFCChunkGenera
                         section.setBlockState(x, y & 15, z, stateAt, false);
                         worldSurface.update(x, y, z, stateAt);
                         oceanFloor.update(x, y, z, stateAt);
+                    }
+                }
+            }
+        }
+    }
+
+    protected void buildHeightDependentRivers(ChunkPrimer chunk, ChunkPos chunkPos)
+    {
+        for (RiverStructure river : riverGenerator.generateRiversAroundChunk(chunkPos))
+        {
+            for (RiverPiece piece : river.getPieces())
+            {
+                int xPos = (int) piece.getX();
+                int zPos = (int) piece.getZ();
+                for (int x = 0; x < piece.getWidth(); x++)
+                {
+                    for (int z = 0; z < piece.getWidth(); z++)
+                    {
+                        if ((xPos + x) >> 4 == chunkPos.x && (zPos + z) >> 4 == chunkPos.z)
+                        {
+                            // Intersect the chunk at hand
+                            Flow flow = piece.getFlow(x, z);
+                            if (flow != Flow.NONE)
+                            {
+                                chunk.setBlockState(new BlockPos(xPos + x, 150, zPos + z), Blocks.RED_STAINED_GLASS.defaultBlockState(), false);
+                            }
+                        }
                     }
                 }
             }

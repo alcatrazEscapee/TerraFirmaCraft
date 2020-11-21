@@ -21,7 +21,7 @@ import net.minecraft.world.gen.feature.ProbabilityConfig;
 
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.common.types.RockManager;
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.RockData;
 
 public class TFCUnderwaterCaveCarver extends UnderwaterCaveWorldCarver implements IContextCarver
 {

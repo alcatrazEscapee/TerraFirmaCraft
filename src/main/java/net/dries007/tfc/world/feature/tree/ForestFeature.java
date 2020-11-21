@@ -19,9 +19,9 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 
 import com.mojang.serialization.Codec;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataProvider;
-import net.dries007.tfc.world.chunkdata.ForestType;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataProvider;
+import net.dries007.tfc.world.chunk.ForestType;
 
 public class ForestFeature extends Feature<ForestConfig>
 {

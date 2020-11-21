@@ -18,8 +18,8 @@ import net.dries007.tfc.util.Helpers;
 import net.dries007.tfc.util.calendar.Calendars;
 import net.dries007.tfc.util.calendar.Month;
 import net.dries007.tfc.util.calendar.Season;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
 import net.dries007.tfc.world.noise.NoiseUtil;
 
 public final class TFCColors

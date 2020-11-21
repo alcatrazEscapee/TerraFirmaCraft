@@ -1,4 +1,4 @@
-package net.dries007.tfc.world.chunkdata;
+package net.dries007.tfc.world.chunk;
 
 /**
  * This is the object responsible for generating TFC chunk data, in parallel with normal chunk generation.

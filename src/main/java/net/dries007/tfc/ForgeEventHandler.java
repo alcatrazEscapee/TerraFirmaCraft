@@ -54,10 +54,10 @@ import net.dries007.tfc.util.support.SupportManager;
 import net.dries007.tfc.util.tracker.WorldTracker;
 import net.dries007.tfc.util.tracker.WorldTrackerCapability;
 import net.dries007.tfc.world.biome.ITFCBiomeProvider;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
-import net.dries007.tfc.world.chunkdata.ChunkDataCapability;
-import net.dries007.tfc.world.chunkdata.ITFCChunkGenerator;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ChunkDataCapability;
+import net.dries007.tfc.world.chunk.ITFCChunkGenerator;
 
 import static net.dries007.tfc.TerraFirmaCraft.MOD_ID;
 

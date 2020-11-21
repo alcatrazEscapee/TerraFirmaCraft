@@ -24,7 +24,7 @@ import net.dries007.tfc.common.recipes.LandslideRecipe;
 import net.dries007.tfc.common.recipes.TFCRecipeTypes;
 import net.dries007.tfc.common.types.MetalItemManager;
 import net.dries007.tfc.mixin.item.crafting.RecipeManagerAccessor;
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
 
 /**
  * This is a manager for various cache invalidations, either on resource reload or server start/stop

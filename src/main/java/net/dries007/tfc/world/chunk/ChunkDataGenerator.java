@@ -1,4 +1,4 @@
-package net.dries007.tfc.world.chunkdata;
+package net.dries007.tfc.world.chunk;
 
 import java.util.List;
 import java.util.Random;
@@ -21,7 +21,7 @@ import net.dries007.tfc.world.noise.SimplexNoise2D;
  * This is TFC's default chunk data generator.
  * If you want to use a vanilla or custom chunk generator, you can use this chunk data generator, or attach your own.
  *
- * @see net.dries007.tfc.world.chunkdata.IChunkDataGenerator
+ * @see net.dries007.tfc.world.chunk.IChunkDataGenerator
  */
 public class ChunkDataGenerator implements IChunkDataGenerator
 {

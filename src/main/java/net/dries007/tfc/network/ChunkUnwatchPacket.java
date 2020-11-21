@@ -11,7 +11,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
 
 /**
  * Sent from server -> client, clears the client side chunk data cache when a chunk is unwatched

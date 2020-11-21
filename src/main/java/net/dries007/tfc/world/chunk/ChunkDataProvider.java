@@ -3,7 +3,7 @@
  * See the project README.md and LICENSE.txt for more information.
  */
 
-package net.dries007.tfc.world.chunkdata;
+package net.dries007.tfc.world.chunk;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.math.BlockPos;

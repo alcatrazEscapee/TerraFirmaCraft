@@ -21,8 +21,8 @@ import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.soil.SandBlockType;
 import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.RockData;
 
 /**
  * Replaces world gen blocks with TFC equivalents.

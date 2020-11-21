@@ -18,8 +18,8 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.util.Climate;
 import net.dries007.tfc.util.calendar.Calendars;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataProvider;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataProvider;
 import net.dries007.tfc.world.noise.INoise2D;
 import net.dries007.tfc.world.noise.SimplexNoise2D;
 

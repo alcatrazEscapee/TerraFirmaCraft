@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.soil.SoilBlockType;
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.RockData;
 import net.dries007.tfc.world.noise.INoise2D;
 import net.dries007.tfc.world.noise.SimplexNoise2D;
 

@@ -3,7 +3,7 @@
  * See the project README.md and LICENSE.txt for more information.
  */
 
-package net.dries007.tfc.world.chunkdata;
+package net.dries007.tfc.world.chunk;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;

@@ -5,9 +5,6 @@
 
 package net.dries007.tfc.world.river;
 
-/**
- * todo: this should just be replaced with {@link net.minecraft.util.math.MutableBoundingBox}
- */
 public class XZRange
 {
     private final float xStart;

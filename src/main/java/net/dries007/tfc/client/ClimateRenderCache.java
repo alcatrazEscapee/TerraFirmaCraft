@@ -7,8 +7,8 @@ import net.minecraft.world.World;
 
 import net.dries007.tfc.util.Climate;
 import net.dries007.tfc.util.calendar.Calendars;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
 
 /**
  * This stores the climate parameters at the current client player location, for quick lookup in rendering purposes

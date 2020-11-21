@@ -8,7 +8,7 @@ import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.gen.surfacebuilders.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilders.ISurfaceBuilderConfig;
 
-import net.dries007.tfc.world.chunkdata.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkData;
 
 /**
  * Indicates that a surface builder requires more (or possibly just different) context in order to generate.
@@ -37,7 +37,7 @@ public interface IContextSurfaceBuilder<C extends ISurfaceBuilderConfig>
     }
 
     /**
-     * @param chunkData Chunk data, generated to at least {@link net.dries007.tfc.world.chunkdata.ChunkData.Status#ROCKS}
+     * @param chunkData Chunk data, generated to at least {@link net.dries007.tfc.world.chunk.ChunkData.Status#ROCKS}
      */
     void applyWithContext(ChunkData chunkData, Biome biomeIn, Random random, IChunk chunkIn, int x, int z, int startHeight, double noise, BlockState defaultBlock, BlockState defaultFluid, int seaLevel, long seed, C config);
 }

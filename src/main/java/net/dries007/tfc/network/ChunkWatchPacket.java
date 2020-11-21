@@ -17,9 +17,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import net.dries007.tfc.client.ClientHelpers;
 import net.dries007.tfc.util.LerpFloatLayer;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataCache;
-import net.dries007.tfc.world.chunkdata.ForestType;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataCache;
+import net.dries007.tfc.world.chunk.ForestType;
 
 /**
  * Sent from server -> client on chunk watch, partially syncs chunk data and updates the client cache

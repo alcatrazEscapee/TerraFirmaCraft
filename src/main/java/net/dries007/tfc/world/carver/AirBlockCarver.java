@@ -16,7 +16,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.IChunk;
 
-import net.dries007.tfc.world.chunkdata.RockData;
+import net.dries007.tfc.world.chunk.RockData;
 
 /**
  * Common logic for air block carvers

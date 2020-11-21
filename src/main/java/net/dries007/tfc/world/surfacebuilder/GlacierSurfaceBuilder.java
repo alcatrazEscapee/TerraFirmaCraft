@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.IChunk;
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.util.Climate;
 import net.dries007.tfc.world.TFCChunkGenerator;
-import net.dries007.tfc.world.chunkdata.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkData;
 import net.dries007.tfc.world.noise.INoise2D;
 import net.dries007.tfc.world.noise.SimplexNoise2D;
 

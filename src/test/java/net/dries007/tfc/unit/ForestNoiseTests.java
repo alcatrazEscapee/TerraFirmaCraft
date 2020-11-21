@@ -19,8 +19,8 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import net.dries007.tfc.Artist;
 import net.dries007.tfc.TerraFirmaCraft;
-import net.dries007.tfc.world.chunkdata.ChunkDataGenerator;
-import net.dries007.tfc.world.chunkdata.ChunkDataProvider;
+import net.dries007.tfc.world.chunk.ChunkDataGenerator;
+import net.dries007.tfc.world.chunk.ChunkDataProvider;
 import net.dries007.tfc.world.feature.TFCFeatures;
 import net.dries007.tfc.world.feature.tree.ForestConfig;
 import net.dries007.tfc.world.noise.INoise2D;

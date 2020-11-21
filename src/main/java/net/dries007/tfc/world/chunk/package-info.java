@@ -5,7 +5,7 @@
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-package net.dries007.tfc.world.chunkdata;
+package net.dries007.tfc.world.chunk;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 

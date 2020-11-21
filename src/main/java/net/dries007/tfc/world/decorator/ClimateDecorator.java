@@ -9,8 +9,8 @@ import net.minecraft.world.gen.placement.Placement;
 
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.mixin.world.gen.feature.WorldDecoratingHelperAccessor;
-import net.dries007.tfc.world.chunkdata.ChunkData;
-import net.dries007.tfc.world.chunkdata.ChunkDataProvider;
+import net.dries007.tfc.world.chunk.ChunkData;
+import net.dries007.tfc.world.chunk.ChunkDataProvider;
 
 public class ClimateDecorator extends Placement<ClimateConfig>
 {
