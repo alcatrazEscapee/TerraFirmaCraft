@@ -68,8 +68,7 @@ public abstract class Artist<T, A extends Artist<T, A>>
 
     public A centerSized(int radius)
     {
-        size(radius * 2);
-        return center(radius);
+        return size(radius * 2).center(radius);
     }
 
     public A center(int radius)
@@ -90,6 +89,11 @@ public abstract class Artist<T, A extends Artist<T, A>>
     public A center(int x, int y, int width, int height)
     {
         return dimensions(x - width / 2, y - height / 2, x + width / 2, y + height / 2);
+    }
+
+    public A dimensionsSized(int side)
+    {
+        return size(side).dimensions(side);
     }
 
     public A dimensions(int side)

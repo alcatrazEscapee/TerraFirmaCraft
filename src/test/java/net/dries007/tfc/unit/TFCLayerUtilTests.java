@@ -44,7 +44,6 @@ public class TFCLayerUtilTests
     static final Artist.Raw RAW = Artist.raw().size(1000);
 
     @Test
-    @Disabled
     public void testCreateOverworldBiomeLayer()
     {
         final long seed = System.currentTimeMillis();
@@ -52,7 +51,7 @@ public class TFCLayerUtilTests
 
         // Drawing is done via callbacks in TFCLayerUtil
         IArtist<ITypedAreaFactory<Plate>> plateArtist = (name, index, instance) -> {
-            PLATES.color(this::plateElevationColor);
+            PLATES.color(TFCLayerUtilTests::plateElevationColor);
             PLATES.centerSized(index == 1 ? 10 : 20).draw(name + '_' + index, instance);
             PLATES.centerSized(index == 1 ? 100 : 200).draw(name + '_' + index + "_wide", instance);
         };
@@ -61,7 +60,7 @@ public class TFCLayerUtilTests
             switch (name)
             {
                 case "plate_boundary":
-                    AREA.centerSized(20).color(this::plateBoundaryColor).draw(name + '_' + index, instance);
+                    AREA.centerSized(20).color(TFCLayerUtilTests::plateBoundaryColor).draw(name + '_' + index, instance);
                     AREA.centerSized(200).draw(name + '_' + index + "_wide", instance);
                     break;
                 case "river":
@@ -73,7 +72,8 @@ public class TFCLayerUtilTests
 
                     if (index <= 5)
                         FLOAT_AREA.centerSized((1 << zoom) * 40).color(Artist.Colors.LINEAR_BLUE_RED).draw(name + '_' + index, instance);
-                    else AREA.centerSized((1 << zoom) * 10).color(this::riverColor).draw(name + '_' + index, instance);
+                    else
+                        AREA.centerSized((1 << zoom) * 10).color(TFCLayerUtilTests::riverColor).draw(name + '_' + index, instance);
                     break;
                 }
                 case "lake":
@@ -84,7 +84,7 @@ public class TFCLayerUtilTests
                     else if (index <= 5) zoom = 2;
                     else zoom = 3;
 
-                    AREA.centerSized((1 << zoom) * 40).color(this::lakeColor).draw(name + '_' + index, instance);
+                    AREA.centerSized((1 << zoom) * 40).color(TFCLayerUtilTests::lakeColor).draw(name + '_' + index, instance);
                     break;
                 }
                 case "biomes":
@@ -96,7 +96,11 @@ public class TFCLayerUtilTests
                     else if (index <= 10) zoom = 3;
                     else zoom = 4;
 
-                    AREA.color(this::biomeColor).centerSized((1 << zoom) * 20).draw(name + '_' + index, instance);
+                    AREA.color(TFCLayerUtilTests::biomeColor).centerSized((1 << zoom) * 20).draw(name + '_' + index, instance);
+                    if (index == 18)
+                    {
+                        AREA.color(TFCLayerUtilTests::biomeColor).center(10_000).size(4_000).draw(name + '_' + index + "_wide", instance);
+                    }
                     break;
                 }
             }
@@ -119,7 +123,7 @@ public class TFCLayerUtilTests
             else if (index <= 8) zoom = 4;
             else zoom = 5;
 
-            AREA.color(this::forestColor).centerSized(4 * (1 << zoom));
+            AREA.color(TFCLayerUtilTests::forestColor).centerSized(4 * (1 << zoom));
             AREA.draw(name + '_' + index, instance);
         };
 
@@ -157,7 +161,7 @@ public class TFCLayerUtilTests
         RAW.draw("volcano_biome_map", volcanoBiomeMap);
     }
 
-    private Color plateElevationColor(Plate plate)
+    public static Color plateElevationColor(Plate plate)
     {
         if (plate.isOceanic())
         {
@@ -169,7 +173,7 @@ public class TFCLayerUtilTests
         }
     }
 
-    private Color plateBoundaryColor(int value)
+    public static Color plateBoundaryColor(int value)
     {
         if (value == OCEANIC) return new Color(0, 0, 200);
         if (value == CONTINENTAL_LOW) return new Color(50, 200, 50);
@@ -187,7 +191,7 @@ public class TFCLayerUtilTests
         return Color.BLACK;
     }
 
-    private Color biomeColor(int id)
+    public static Color biomeColor(int id)
     {
         if (id == DEEP_OCEAN) return new Color(0, 0, 250);
         if (id == OCEAN) return new Color(60, 100, 250);
@@ -219,20 +223,20 @@ public class TFCLayerUtilTests
         return Color.BLACK;
     }
 
-    private Color riverColor(int id)
+    public static Color riverColor(int id)
     {
         if (id == RIVER_MARKER) return new Color(80, 140, 255);
         return Color.BLACK;
     }
 
-    private Color lakeColor(int id)
+    public static Color lakeColor(int id)
     {
         if (id == LAKE_MARKER) return new Color(20, 140, 255);
         if (id == INLAND_MARKER) return new Color(100, 100, 100);
         return Color.BLACK;
     }
 
-    private Color forestColor(int id)
+    public static Color forestColor(int id)
     {
         if (id == FOREST_NONE) return new Color(140, 140, 140);
         if (id == FOREST_NORMAL) return new Color(50, 200, 50);
