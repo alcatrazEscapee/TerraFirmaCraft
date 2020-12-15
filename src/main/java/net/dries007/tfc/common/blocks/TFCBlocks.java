@@ -24,13 +24,13 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import net.dries007.tfc.common.TFCItemGroup;
+import net.dries007.tfc.common.blocks.crop.Crop;
 import net.dries007.tfc.common.blocks.plant.Plant;
 import net.dries007.tfc.common.blocks.soil.ConnectedGrassBlock;
 import net.dries007.tfc.common.blocks.soil.SandBlockType;
 import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.dries007.tfc.common.items.TFCItems;
-import net.dries007.tfc.common.tileentity.SnowPileTileEntity;
 import net.dries007.tfc.common.types.Metal;
 import net.dries007.tfc.common.types.Ore;
 import net.dries007.tfc.common.types.Rock;
@@ -70,7 +70,7 @@ public final class TFCBlocks
         register(("groundcover/" + type.name()).toLowerCase(), () -> new GroundcoverBlock(type), block -> new BlockItem(block, new Item.Properties().tab(EARTH)), type.shouldCreateBlockItem())
     );
 
-    public static final RegistryObject<SnowPileBlock> SNOW_PILE = register("snow_pile", () -> new SnowPileBlock(new ForgeBlockProperties(Properties.copy(Blocks.SNOW)).tileEntity(SnowPileTileEntity::new)), EARTH);
+    public static final RegistryObject<SnowPileBlock> SNOW_PILE = register("snow_pile", () -> new SnowPileBlock(Properties.copy(Blocks.SNOW)), EARTH);
     public static final RegistryObject<CalciteBlock> CALCITE = register("calcite", () -> new CalciteBlock(Properties.of(Material.GLASS).noDrops().instabreak().sound(SoundType.GLASS)));
 
     // Ores
@@ -140,9 +140,17 @@ public final class TFCBlocks
         register(("plant/" + plant.name()).toLowerCase(), plant::create, block -> plant.createBlockItem(block, new Item.Properties().tab(FLORA)), true)
     );
 
+    public static final Map<Crop, RegistryObject<Block>> CROPS = Helpers.mapOfKeys(Crop.class, crop ->
+        register(("crop/" + crop.name()).toLowerCase(), crop::create, block -> null, true)
+    );
+
+    public static final Map<Crop, RegistryObject<Block>> DEAD_CROPS = Helpers.mapOfKeys(Crop.class, crop ->
+        register("dead_crop/" + crop.name().toLowerCase(), crop::createDead, block -> null, false)
+    );
+
     // Misc
 
-    public static final RegistryObject<Block> THATCH = register("thatch", () -> new ThatchBlock(new ForgeBlockProperties(Properties.of(Material.PLANT).strength(0.6F, 0.4F).noOcclusion().sound(SoundType.GRASS)).flammable(50, 100)), MISC);
+    public static final RegistryObject<Block> THATCH = register("thatch", () -> new ThatchBlock(Properties.of(Material.PLANT).strength(0.6F, 0.4F).noOcclusion().sound(SoundType.GRASS)), MISC);
     public static final RegistryObject<Block> THATCH_BED = register("thatch_bed", () -> new ThatchBedBlock(Properties.of(Material.REPLACEABLE_PLANT).strength(0.6F, 0.4F)), MISC);
 
 

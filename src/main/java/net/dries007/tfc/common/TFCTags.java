@@ -27,6 +27,7 @@ public class TFCTags
         public static final ITag.INamedTag<Block> GRASS = create("grass"); // Used for connected textures on grass blocks, different from the vanilla/forge tag
         public static final ITag.INamedTag<Block> TREE_GROWS_ON = create("tree_grows_on"); // Used for tree growth
         public static final ITag.INamedTag<Block> BUSH_PLANTABLE_ON = create("bush_plantable_on"); // Used for plant placement
+        public static final ITag.INamedTag<Block> WILD_CROP_GROWS_ON = create("wild_crop_grows_on"); // Used for wild crops
 
         public static final ITag.INamedTag<Block> THATCH_BED_THATCH = create("thatch_bed_thatch");
 
@@ -43,7 +44,8 @@ public class TFCTags
 
     public static class Fluids
     {
-        public static final ITag.INamedTag<Fluid> MIXABLE = create("mixable");
+        public static final ITag.INamedTag<Fluid> MIXABLE = create("mixable"); // Fluid that mesh together using custom mechanics
+        public static final ITag.INamedTag<Fluid> FRESH_WATER = create("fresh_water"); // Fluids that count as fresh water for purposes like farmland moisture
 
         private static ITag.INamedTag<Fluid> create(String id)
         {
@@ -54,6 +56,8 @@ public class TFCTags
     public static class Items
     {
         public static final ITag.INamedTag<Item> THATCH_BED_HIDES = create("thatch_bed_hides");
+
+        public static final ITag.INamedTag<Item> HOES = create("hoes");
 
         private static ITag.INamedTag<Item> create(String id)
         {

@@ -12,7 +12,7 @@ import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.soil.SandBlockType;
 import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.common.types.RockManager;
+import net.dries007.tfc.common.types.managers.RockManager;
 import net.dries007.tfc.world.chunkdata.RockData;
 
 /**

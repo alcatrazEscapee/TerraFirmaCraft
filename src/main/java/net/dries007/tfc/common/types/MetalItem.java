@@ -18,6 +18,8 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
+import net.dries007.tfc.common.types.managers.MetalManager;
+
 public class MetalItem
 {
     private final ResourceLocation id;

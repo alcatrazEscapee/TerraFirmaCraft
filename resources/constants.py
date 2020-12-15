@@ -10,6 +10,7 @@ Ore = NamedTuple('Ore', metal=Optional[str], graded=bool)
 OreGrade = NamedTuple('OreGrade', weight=int)
 Vein = NamedTuple('Vein', ore=str, type=str, rarity=int, size=int, min_y=int, max_y=int, density=float, poor=float, normal=float, rich=float, rocks=List[str])
 Plant = NamedTuple('Plant', clay=bool, min_temp=float, max_temp=float, min_rain=float, max_rain=float, type=str)
+Crop = NamedTuple('Crop', type=str, stages=int)
 
 HORIZONTAL_DIRECTIONS: List[str] = ['east', 'west', 'north', 'south']
 
@@ -289,6 +290,26 @@ PLANTS: Dict[str, Plant] = {
     'yucca': Plant(False, -34, 36, 0, 75, 'standard')
 }
 
+CROPS: Dict[str, Crop] = {
+    'barley': Crop('default', 8),
+    'oat': Crop('default', 8),
+    'rye': Crop('default', 8),
+    'maize': Crop('double', 6),
+    'rice': Crop('default', 8),
+    'beet': Crop('default', 6),
+    'cabbage': Crop('default', 6),
+    'carrot': Crop('default', 5),
+    'garlic': Crop('default', 5),
+    'green_bean': Crop('double_stick', 8),
+    'potato': Crop('default', 7),
+    'onion': Crop('default', 7),
+    'soybean': Crop('default', 7),
+    'squash': Crop('default', 8),
+    'sugarcane': Crop('double', 8),
+    'tomato': Crop('double_stick', 8),
+    'jute': Crop('double', 6)
+}
+
 
 # This is here because it's used all over, and it's easier to import with all constants
 def lang(key: str, *args) -> str:
@@ -338,6 +359,10 @@ DEFAULT_LANG = {
     'tfc.tooltip.f3_forest_type': 'Forest Type: ',
     'tfc.tooltip.f3_forest_properties': 'Forest Density = %s, Weirdness = %s',
     'tfc.tooltip.f3_invalid_chunk_data': 'Invalid Chunk Data',
+    'tfc.tooltip.farmland_nutrients': '§2Nutrients§7: N = %s%%, P = %s%%, K = %s%%',
+    'tfc.tooltip.farmland_drainage_hydration_in': '§9Hydration§7: %s (Rainfall = %s, Nearby Water = %s, Altitude = %s)',
+    'tfc.tooltip.farmland_drainage_hydration_out': '§9Drainage§7: %s (Soil = %s, Nearby Area = %s)',
+    'tfc.tooltip.farmland_drainage_hydration_status': '§3Hydration Status§7:',
 
     # Commands
     'tfc.commands.time.query.daytime': 'The day time is %s',
@@ -359,16 +384,21 @@ DEFAULT_LANG = {
     **lang_enum('day', ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')),
     **lang_enum('foresttype', ('sparse', 'old_growth', 'normal', 'none')),
     **lang_enum('koppenclimateclassification', ('arctic', 'tundra', 'subarctic', 'cold_desert', 'hot_desert', 'temperate', 'subtropical', 'humid_subtropical', 'humid_oceanic', 'humid_subtropical', 'tropical_savanna', 'tropical_rainforest')),
-    'tfc.enum.platetectonicsclassification.oceanic': 'Oceanic Plate',
-    'tfc.enum.platetectonicsclassification.continental_low': 'Low Altitude Continental',
-    'tfc.enum.platetectonicsclassification.continental_mid': 'Mid Altitude Continental',
-    'tfc.enum.platetectonicsclassification.continental_high': 'High Altitude Continental',
-    'tfc.enum.platetectonicsclassification.ocean_ocean_diverging': 'Oceanic Rift',
-    'tfc.enum.platetectonicsclassification.ocean_ocean_converging': 'Oceanic Orogeny',
-    'tfc.enum.platetectonicsclassification.ocean_continent_diverging': 'Coastal Rift',
-    'tfc.enum.platetectonicsclassification.ocean_continent_converging': 'Subduction Zone',
-    'tfc.enum.platetectonicsclassification.continent_continent_diverging': 'Continental Rift',
-    'tfc.enum.platetectonicsclassification.continent_continent_converging': 'Orogenic Belt',
+    **lang_enum('hydrationstatus', ('saturated', 'good', 'dehydrated')),
+    **dict(('tfc.enum.platetectonicsclassification.%s' % k, v) for k, v in {
+        'oceanic': 'Oceanic',
+        'continental_low': 'Low Altitude Continental',
+        'continental_mid': 'Mid Altitude Continental',
+        'continental_high': 'High Altitude Continental',
+        'ocean_ocean_diverging': 'Mid-Ocean Ridge',
+        'ocean_ocean_converging_lower': 'Oceanic Subduction',
+        'ocean_ocean_converging_upper': 'Oceanic Subduction',
+        'ocean_continent_converging_lower': 'Continental Subduction',
+        'ocean_continent_converging_upper': 'Continental Subduction',
+        'continent_continent_diverging': 'Continental Rift',
+        'continent_continent_converging': 'Orogenic Belt',
+        'continental_shelf': 'Continental Shelf'
+    }.items()),
     'tfc.enum.season.january': 'Winter',
     'tfc.enum.season.february': 'Late Winter',
     'tfc.enum.season.march': 'Early Spring',

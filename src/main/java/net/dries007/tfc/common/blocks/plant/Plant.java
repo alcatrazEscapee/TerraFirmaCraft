@@ -8,6 +8,8 @@ package net.dries007.tfc.common.blocks.plant;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
+import javax.annotation.Nullable;
+
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -95,18 +97,21 @@ public enum Plant implements IPlant
     private final int[] stagesByMonth;
     private final BlockType type;
 
-    Plant(BlockType type, float speedFactor, int[] stagesByMonth)
+    Plant(BlockType type, float speedFactor, @Nullable int[] stagesByMonth)
     {
         this.type = type;
         this.speedFactor = speedFactor;
         this.stagesByMonth = stagesByMonth;
 
-        int maxStage = Arrays.stream(stagesByMonth).max().orElse(1);
-        if (maxStage > TFCBlockStateProperties.STAGES.length)
+        int maxStage = 1;
+        if (stagesByMonth != null)
         {
-            throw new IllegalStateException("Max stage = " + maxStage + " is larger than the max stage of any provided property!");
+            maxStage = Arrays.stream(stagesByMonth).max().orElse(1);
         }
-        this.property = TFCBlockStateProperties.STAGES[maxStage];
+        // todo: this should really not stick an extra stage property on stuff that doesn't need it
+        // but to handle that we'd need to make this properly nullable, and then trace down all locations where plant blocks don't actually have a stage property (mostly likely adding setStage(BlockState, int) to IPlant
+        // For now, this will do to avoid errors elsewhere
+        this.property = maxStage > 0 ? TFCBlockStateProperties.getStageProperty(maxStage) : TFCBlockStateProperties.getStageProperty(1);
     }
 
     public Block create()

@@ -39,6 +39,8 @@ public class ServerConfig
     // Blocks - Cobblestone
     public final ForgeConfigSpec.BooleanValue enableMossyRockSpreading;
     public final ForgeConfigSpec.IntValue mossyRockSpreadRate;
+    // Items - Bone Meal
+    public final ForgeConfigSpec.BooleanValue enableVanillaBoneMeal;
     // Mechanics - Heat
     public final ForgeConfigSpec.DoubleValue itemHeatingModifier;
     // Mechanics - Collapses
@@ -94,6 +96,10 @@ public class ServerConfig
 
         enableMossyRockSpreading = builder.apply("enableMossyRockSpreading").comment("If mossy rock blocks will spread their moss to nearby rock blocks (bricks and cobble; stairs, slabs and walls thereof).").define("enableMossyRockSpreading", true);
         mossyRockSpreadRate = builder.apply("mossyRockSpreadRate").comment("The rate at which rock blocks will accumulate moss. Higher value = slower.").defineInRange("mossyRockSpreadRate", 20, 1, Integer.MAX_VALUE);
+
+        innerBuilder.pop().pop().push("items").push("bonemeal");
+
+        enableVanillaBoneMeal = builder.apply("enableVanillaBoneMeal").comment("If vanilla bone meal behavior (immediately growing crops) should be allowed.").define("enableVanillaBoneMeal", false);
 
         innerBuilder.pop().pop().push("mechanics").push("heat");
 

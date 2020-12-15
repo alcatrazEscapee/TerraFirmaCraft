@@ -2,7 +2,7 @@ package net.dries007.tfc.world.chunkdata;
 
 /**
  * Values for plate tectonics
- *
+ * todo: FIX
  * These must match the compile time constants in {@link net.dries007.tfc.world.layer.TFCLayerUtil}
  */
 public enum PlateTectonicsClassification
@@ -12,11 +12,14 @@ public enum PlateTectonicsClassification
     CONTINENTAL_MID,
     CONTINENTAL_HIGH,
     OCEAN_OCEAN_DIVERGING,
-    OCEAN_OCEAN_CONVERGING,
+    OCEAN_OCEAN_CONVERGING_LOWER,
+    OCEAN_OCEAN_CONVERGING_UPPER,
+    OCEAN_CONTINENT_CONVERGING_LOWER,
+    OCEAN_CONTINENT_CONVERGING_UPPER,
     OCEAN_CONTINENT_DIVERGING,
-    OCEAN_CONTINENT_CONVERGING,
     CONTINENT_CONTINENT_DIVERGING,
-    CONTINENT_CONTINENT_CONVERGING;
+    CONTINENT_CONTINENT_CONVERGING,
+    CONTINENTAL_SHELF;
 
     private static final PlateTectonicsClassification[] VALUES = values();
 

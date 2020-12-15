@@ -3,6 +3,7 @@ package net.dries007.tfc.common.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -12,15 +13,11 @@ import net.minecraft.world.World;
 
 import net.dries007.tfc.util.Helpers;
 
-public class ThatchBlock extends Block implements IForgeBlockProperties
+public class ThatchBlock extends Block
 {
-    private final ForgeBlockProperties properties;
-
-    public ThatchBlock(ForgeBlockProperties properties)
+    public ThatchBlock(Properties properties)
     {
-        super(properties.properties());
-
-        this.properties = properties;
+        super(properties);
     }
 
     @Override
@@ -38,8 +35,14 @@ public class ThatchBlock extends Block implements IForgeBlockProperties
     }
 
     @Override
-    public ForgeBlockProperties getForgeProperties()
+    public int getFlammability(BlockState state, IBlockReader world, BlockPos pos, Direction face)
     {
-        return properties;
+        return 50;
+    }
+
+    @Override
+    public int getFireSpreadSpeed(BlockState state, IBlockReader world, BlockPos pos, Direction face)
+    {
+        return 100;
     }
 }

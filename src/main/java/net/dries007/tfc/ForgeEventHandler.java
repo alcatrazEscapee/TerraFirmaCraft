@@ -29,7 +29,9 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.BonemealEvent;
 import net.minecraftforge.event.world.*;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
@@ -44,11 +46,12 @@ import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 import net.dries007.tfc.common.capabilities.heat.HeatDefinition;
 import net.dries007.tfc.common.capabilities.heat.HeatManager;
 import net.dries007.tfc.common.command.TFCCommands;
+import net.dries007.tfc.common.types.*;
+import net.dries007.tfc.common.types.managers.FertilizerManager;
+import net.dries007.tfc.common.types.managers.MetalItemManager;
+import net.dries007.tfc.common.types.managers.MetalManager;
+import net.dries007.tfc.common.types.managers.RockManager;
 import net.dries007.tfc.common.recipes.CollapseRecipe;
-import net.dries007.tfc.common.types.MetalItemManager;
-import net.dries007.tfc.common.types.MetalManager;
-import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.common.types.RockManager;
 import net.dries007.tfc.config.TFCConfig;
 import net.dries007.tfc.network.ChunkUnwatchPacket;
 import net.dries007.tfc.network.PacketHandler;
@@ -236,6 +239,7 @@ public final class ForgeEventHandler
         resourceManager.registerReloadListener(MetalItemManager.INSTANCE);
         resourceManager.registerReloadListener(SupportManager.INSTANCE);
         resourceManager.registerReloadListener(HeatManager.INSTANCE);
+        resourceManager.registerReloadListener(FertilizerManager.INSTANCE);
 
         resourceManager.registerReloadListener(CacheInvalidationListener.INSTANCE);
     }
@@ -394,6 +398,21 @@ public final class ForgeEventHandler
         else if (originalBlock == Blocks.BASALT)
         {
             event.setNewState(TFCBlocks.ROCK_BLOCKS.get(Rock.Default.BASALT).get(Rock.BlockType.HARDENED).get().defaultBlockState());
+        }
+    }
+
+    /**
+     * Deny all traditional uses of bone meal directly to grow crops.
+     * Fertilizer is used as a replacement.
+     * @param event {@link BonemealEvent}
+     */
+    @SubscribeEvent
+    public static void onBoneMeal(BonemealEvent event)
+    {
+        if (!TFCConfig.SERVER.enableVanillaBoneMeal.get())
+        {
+            event.setResult(Event.Result.DENY);
+            event.setCanceled(true);
         }
     }
 }

@@ -1,11 +1,14 @@
 package net.dries007.tfc.common.blocks;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -19,7 +22,7 @@ import net.dries007.tfc.util.Helpers;
  * This block is a snow layer block that hides / covers a block underneath
  * When it melts, it will transform into the underlying block, with one level of snow active
  */
-public class SnowPileBlock extends SnowBlock implements IForgeBlockProperties
+public class SnowPileBlock extends SnowBlock
 {
     /**
      * Converts an existing block state to a snow pile consisting of that block state
@@ -35,19 +38,9 @@ public class SnowPileBlock extends SnowBlock implements IForgeBlockProperties
         Helpers.getTileEntityOrThrow(world, pos, SnowPileTileEntity.class).setInternalState(state);
     }
 
-    private final ForgeBlockProperties properties;
-
-    public SnowPileBlock(ForgeBlockProperties properties)
+    public SnowPileBlock(Properties properties)
     {
-        super(properties.properties());
-
-        this.properties = properties;
-    }
-
-    @Override
-    public ForgeBlockProperties getForgeProperties()
-    {
-        return properties;
+        super(properties);
     }
 
     /**
@@ -62,6 +55,19 @@ public class SnowPileBlock extends SnowBlock implements IForgeBlockProperties
         SnowPileTileEntity te = Helpers.getTileEntityOrThrow(world, pos, SnowPileTileEntity.class);
         BlockState newState = te.getDestroyedState(state);
         return world.setBlock(pos, newState, world.isClientSide ? 11 : 3);
+    }
+
+    @Override
+    public boolean hasTileEntity(BlockState state)
+    {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world)
+    {
+        return new SnowPileTileEntity();
     }
 
     @Override

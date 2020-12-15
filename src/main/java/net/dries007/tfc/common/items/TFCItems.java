@@ -8,16 +8,15 @@ package net.dries007.tfc.common.items;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import net.dries007.tfc.common.TFCItemGroup;
 import net.dries007.tfc.common.blocks.Gem;
+import net.dries007.tfc.common.blocks.TFCBlocks;
+import net.dries007.tfc.common.blocks.crop.Crop;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.dries007.tfc.common.types.Metal;
 import net.dries007.tfc.common.types.Ore;
@@ -26,7 +25,7 @@ import net.dries007.tfc.common.types.RockCategory;
 import net.dries007.tfc.util.Helpers;
 
 import static net.dries007.tfc.TerraFirmaCraft.MOD_ID;
-import static net.dries007.tfc.common.TFCItemGroup.MISC;
+import static net.dries007.tfc.common.TFCItemGroup.*;
 
 /**
  * Collection of all TFC items.
@@ -59,7 +58,7 @@ public final class TFCItems
         )
     );
 
-    // Rock Stuff
+    // Rock
 
     public static final Map<RockCategory, Map<RockCategory.ItemType, RegistryObject<Item>>> ROCK_TOOLS = Helpers.mapOfKeys(RockCategory.class, category ->
         Helpers.mapOfKeys(RockCategory.ItemType.class, type ->
@@ -69,6 +68,18 @@ public final class TFCItems
 
     public static final Map<Rock.Default, RegistryObject<Item>> BRICKS = Helpers.mapOfKeys(Rock.Default.class, type ->
         register("brick/" + type.name().toLowerCase(), MISC)
+    );
+
+    // Food
+
+    public static final Map<Food, RegistryObject<Item>> FOODS = Helpers.mapOfKeys(Food.class, food ->
+        register("food/" + food.name().toLowerCase(), FOOD)
+    );
+
+    // Flora
+
+    public static final Map<Crop, RegistryObject<Item>> CROP_SEEDS = Helpers.mapOfKeys(Crop.class, crop ->
+        register("seeds/" + crop.name().toLowerCase(), () -> new BlockNamedItem(TFCBlocks.CROPS.get(crop).get(), new Item.Properties().tab(FLORA)))
     );
 
     // Misc

@@ -21,7 +21,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import com.mojang.serialization.Codec;
 import net.dries007.tfc.common.blocks.rock.RockSpikeBlock;
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.common.types.RockManager;
+import net.dries007.tfc.common.types.managers.RockManager;
 
 public class CaveSpikesFeature extends Feature<NoFeatureConfig>
 {

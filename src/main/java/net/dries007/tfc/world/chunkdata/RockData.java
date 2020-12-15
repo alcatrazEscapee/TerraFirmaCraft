@@ -20,7 +20,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.common.types.RockManager;
+import net.dries007.tfc.common.types.managers.RockManager;
 import net.dries007.tfc.util.Helpers;
 
 public class RockData implements INBTSerializable<CompoundNBT>

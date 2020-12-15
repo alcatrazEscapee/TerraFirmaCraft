@@ -66,7 +66,7 @@ public abstract class TFCTileEntity extends TileEntity
 
     /**
      * Marks a tile entity for syncing without sending a block update.
-     * Use preferentially over {@link InventoryTileEntity#markForBlockUpdate()} if there's no reason to have a block update.
+     * Use preferentially over {@link TFCTileEntity#markForBlockUpdate()} if there's no reason to have a block update.
      * For container based integer synchronization, see ITileFields
      * DO NOT call every tick
      */

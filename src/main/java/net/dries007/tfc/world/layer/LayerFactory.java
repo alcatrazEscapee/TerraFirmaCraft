@@ -13,7 +13,7 @@ import net.minecraft.world.gen.area.LazyArea;
 import net.minecraftforge.common.util.Lazy;
 
 import net.dries007.tfc.common.types.Rock;
-import net.dries007.tfc.common.types.RockManager;
+import net.dries007.tfc.common.types.managers.RockManager;
 import net.dries007.tfc.world.biome.BiomeVariants;
 import net.dries007.tfc.world.biome.TFCBiomeProvider;
 import net.dries007.tfc.world.chunkdata.PlateTectonicsClassification;

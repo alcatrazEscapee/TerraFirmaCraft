@@ -13,9 +13,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 
-import net.dries007.tfc.common.blocks.ForgeBlockProperties;
 import net.dries007.tfc.common.blocks.TFCBlocks;
-import net.dries007.tfc.common.tileentity.FarmlandTileEntity;
 
 public enum SoilBlockType
 {
@@ -24,7 +22,7 @@ public enum SoilBlockType
     GRASS_PATH((self, variant) -> new TFCGrassPathBlock(Block.Properties.of(Material.DIRT).strength(0.65F).sound(SoundType.GRASS), self.transform(), variant)),
     CLAY((self, variant) -> new DirtBlock(Block.Properties.of(Material.DIRT, MaterialColor.DIRT).strength(0.5F).sound(SoundType.GRAVEL), self.transform(), variant)),
     CLAY_GRASS((self, variant) -> new ConnectedGrassBlock(Block.Properties.of(Material.GRASS).randomTicks().strength(0.6F).sound(SoundType.GRASS), self.transform(), variant)),
-    FARMLAND((self, variant) -> new TFCFarmlandBlock(new ForgeBlockProperties(AbstractBlock.Properties.of(Material.DIRT).strength(0.6f).sound(SoundType.GRAVEL).isViewBlocking(TFCBlocks::always).isSuffocating(TFCBlocks::always)).tileEntity(FarmlandTileEntity::new), variant));
+    FARMLAND((self, variant) -> new TFCFarmlandBlock(AbstractBlock.Properties.of(Material.DIRT).strength(0.6f).sound(SoundType.GRAVEL).isViewBlocking(TFCBlocks::always).isSuffocating(TFCBlocks::always).randomTicks(), variant));
 
     public static final SoilBlockType[] VALUES = values();
 
@@ -68,10 +66,22 @@ public enum SoilBlockType
 
     public enum Variant
     {
-        SILT,
-        LOAM,
-        SANDY_LOAM,
-        SILTY_LOAM;
+        SILT(1),
+        LOAM(3),
+        SANDY_LOAM(2),
+        SILTY_LOAM(2);
+
+        private final int drainage;
+
+        Variant(int drainage)
+        {
+            this.drainage = drainage;
+        }
+
+        public int getDrainage()
+        {
+            return drainage;
+        }
 
         private static final Variant[] VALUES = values();
 

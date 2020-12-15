@@ -22,7 +22,8 @@ import net.dries007.tfc.common.capabilities.heat.HeatManager;
 import net.dries007.tfc.common.recipes.CollapseRecipe;
 import net.dries007.tfc.common.recipes.LandslideRecipe;
 import net.dries007.tfc.common.recipes.TFCRecipeTypes;
-import net.dries007.tfc.common.types.MetalItemManager;
+import net.dries007.tfc.common.types.managers.FertilizerManager;
+import net.dries007.tfc.common.types.managers.MetalItemManager;
 import net.dries007.tfc.mixin.item.crafting.RecipeManagerAccessor;
 import net.dries007.tfc.world.chunkdata.ChunkDataCache;
 
@@ -49,6 +50,7 @@ public enum CacheInvalidationListener implements IFutureReloadListener
 
             HeatManager.reload();
             MetalItemManager.reload();
+            FertilizerManager.reload();
 
             InteractionManager.reload();
         }

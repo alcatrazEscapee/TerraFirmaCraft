@@ -42,7 +42,7 @@ def generate(rm: ResourceManager):
 
         # Common metal crafting tools
         if 'tool' in metal_data.types:
-            for tool in ('hammer', 'chisel', 'axe', 'pickaxe', 'shovel'):
+            for tool in ('hammer', 'chisel', 'axe', 'pickaxe', 'shovel', 'hoe'):
                 rm.item_tag('tfc:%ss' % tool, 'tfc:metal/%s/%s' % (tool, metal))
 
     # Rocks
@@ -54,14 +54,24 @@ def generate(rm: ResourceManager):
             'beach_sand_color': rock_data.beach_sand_color
         })
 
-        rm.block_tag('minecraft:base_stone_overworld', 'tfc:rock/raw/%s' % rock)  # used by vanilla, provided for consistiency
+        rm.block_tag('minecraft:base_stone_overworld', 'tfc:rock/raw/%s' % rock)  # used by vanilla, provided for consistency
         rm.block_tag('tfc:breaks_when_isolated', 'tfc:rock/raw/%s' % rock)  # only raw rock
+
+        # Drainage
+        for block_type in ('cobble', 'mossy_cobble', 'gravel'):
+            rm.block_tag('tfc:good_drainage', 'tfc:rock/%s/%s' % (block_type, rock))
+        for block_type in ('bricks', 'cracked_bricks', 'mossy_bricks'):
+            rm.block_tag('tfc:poor_drainage', 'tfc:rock/%s/%s' % (block_type, rock))
+
+    for sand in SAND_BLOCK_TYPES:
+        rm.block_tag('tfc:poor_drainage', 'tfc:sand/%s' % sand)
 
     # Tags
     rm.item_tag('forge:ingots/cast_iron', 'minecraft:iron_ingot')
     rm.block_tag('tree_grows_on', 'minecraft:grass_block', '#forge:dirt', '#tfc:grass')
     rm.block_tag('supports_landslide', 'minecraft:grass_path')
     rm.block_tag('bush_plantable_on', 'minecraft:grass_block', '#forge:dirt', '#tfc:grass')
+    rm.block_tag('wild_crop_grows_on', 'minecraft:grass_block', '#forge:dirt', '#tfc:grass')
 
     # Thatch Bed
     rm.item_tag('thatch_bed_hides', 'tfc:large_raw_hide', 'tfc:large_sheepskin_hide')
@@ -75,3 +85,7 @@ def generate(rm: ResourceManager):
 
     # Valid spawn tag - grass, sand, or raw rock
     rm.block_tag('minecraft:valid_spawn', *['tfc:grass/%s' % v for v in SOIL_BLOCK_VARIANTS], *['tfc:sand/%s' % c for c in SAND_BLOCK_TYPES], *['tfc:rock/raw/%s' % r for r in ROCKS.keys()])
+
+    # Fluid tags
+    rm.fluid_tag('mixable', '#minecraft:water')
+    rm.fluid_tag('fresh_water', '#minecraft:water')
