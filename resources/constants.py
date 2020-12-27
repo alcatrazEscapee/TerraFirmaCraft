@@ -359,10 +359,11 @@ DEFAULT_LANG = {
     'tfc.tooltip.f3_forest_type': 'Forest Type: ',
     'tfc.tooltip.f3_forest_properties': 'Forest Density = %s, Weirdness = %s',
     'tfc.tooltip.f3_invalid_chunk_data': 'Invalid Chunk Data',
+    'tfc.tooltip.farmland': 'Farmland:',
     'tfc.tooltip.farmland_nutrients': '§2Nutrients§7: N = %s%%, P = %s%%, K = %s%%',
-    'tfc.tooltip.farmland_drainage_hydration_in': '§9Hydration§7: %s (Rainfall = %s, Nearby Water = %s, Altitude = %s)',
-    'tfc.tooltip.farmland_drainage_hydration_out': '§9Drainage§7: %s (Soil = %s, Nearby Area = %s)',
-    'tfc.tooltip.farmland_drainage_hydration_status': '§3Hydration Status§7:',
+    'tfc.tooltip.farmland_hydration_dry': '§7Hydration: §eDry',
+    'tfc.tooltip.farmland_hydration_moist': '§7Hydration: §bMoist',
+    'tfc.tooltip.farmland_hydration_soaked': '§7Hydration: §9Saturated',
 
     # Commands
     'tfc.commands.time.query.daytime': 'The day time is %s',
@@ -384,7 +385,6 @@ DEFAULT_LANG = {
     **lang_enum('day', ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')),
     **lang_enum('foresttype', ('sparse', 'old_growth', 'normal', 'none')),
     **lang_enum('koppenclimateclassification', ('arctic', 'tundra', 'subarctic', 'cold_desert', 'hot_desert', 'temperate', 'subtropical', 'humid_subtropical', 'humid_oceanic', 'humid_subtropical', 'tropical_savanna', 'tropical_rainforest')),
-    **lang_enum('hydrationstatus', ('saturated', 'good', 'dehydrated')),
     **dict(('tfc.enum.platetectonicsclassification.%s' % k, v) for k, v in {
         'oceanic': 'Oceanic',
         'continental_low': 'Low Altitude Continental',

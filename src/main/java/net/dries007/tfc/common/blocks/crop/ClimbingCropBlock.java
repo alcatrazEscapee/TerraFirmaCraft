@@ -42,10 +42,10 @@ public abstract class ClimbingCropBlock extends DoubleCropBlock
     protected ClimbingCropBlock(Properties properties, int maxSingleAge, int maxAge, Supplier<? extends Block> dead, Supplier<? extends Item> seeds, FarmlandTileEntity.NutrientType primaryNutrient)
     {
         super(properties, maxSingleAge, maxAge, dead, seeds, primaryNutrient);
+        registerDefaultState(defaultBlockState().setValue(STICK, false));
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         final ItemStack heldStack = player.getItemInHand(handIn);

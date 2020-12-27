@@ -6,14 +6,18 @@
 package net.dries007.tfc.common.blocks;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 import net.minecraft.block.AbstractBlock.Properties;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockNamedItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +71,7 @@ public final class TFCBlocks
     );
 
     public static final Map<GroundcoverBlockType, RegistryObject<Block>> GROUNDCOVER = Helpers.mapOfKeys(GroundcoverBlockType.class, type ->
-        register(("groundcover/" + type.name()).toLowerCase(), () -> new GroundcoverBlock(type), block -> new BlockItem(block, new Item.Properties().tab(EARTH)), type.shouldCreateBlockItem())
+        register(("groundcover/" + type.name()).toLowerCase(), () -> new GroundcoverBlock(type), type.createBlockItemFactory())
     );
 
     public static final RegistryObject<SnowPileBlock> SNOW_PILE = register("snow_pile", () -> new SnowPileBlock(Properties.copy(Blocks.SNOW)), EARTH);
@@ -137,15 +141,15 @@ public final class TFCBlocks
     // Flora
 
     public static final Map<Plant, RegistryObject<Block>> PLANTS = Helpers.mapOfKeys(Plant.class, plant ->
-        register(("plant/" + plant.name()).toLowerCase(), plant::create, block -> plant.createBlockItem(block, new Item.Properties().tab(FLORA)), true)
+        register(("plant/" + plant.name()).toLowerCase(), plant::create, block -> plant.createBlockItem(block, new Item.Properties().tab(FLORA)))
     );
 
     public static final Map<Crop, RegistryObject<Block>> CROPS = Helpers.mapOfKeys(Crop.class, crop ->
-        register(("crop/" + crop.name()).toLowerCase(), crop::create, block -> null, true)
+        register(("crop/" + crop.name()).toLowerCase(), crop::create, block -> new BlockNamedItem(block, new Item.Properties().tab(FLORA)))
     );
 
     public static final Map<Crop, RegistryObject<Block>> DEAD_CROPS = Helpers.mapOfKeys(Crop.class, crop ->
-        register("dead_crop/" + crop.name().toLowerCase(), crop::createDead, block -> null, false)
+        register("dead_crop/" + crop.name().toLowerCase(), crop::createDead)
     );
 
     // Misc
@@ -173,27 +177,30 @@ public final class TFCBlocks
         return false;
     }
 
+    /**
+     * Registers a block WITHOUT a {@link BlockItem}
+     */
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier)
     {
-        return register(name, blockSupplier, block -> null, false);
+        return register(name, blockSupplier, (Function<T, ? extends BlockItem>) null);
     }
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, ItemGroup group)
     {
-        return register(name, blockSupplier, block -> new BlockItem(block, new Item.Properties().tab(group)), true);
+        return register(name, blockSupplier, block -> new BlockItem(block, new Item.Properties().tab(group)));
     }
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, Item.Properties blockItemProperties)
     {
-        return register(name, blockSupplier, block -> new BlockItem(block, blockItemProperties), true);
+        return register(name, blockSupplier, block -> new BlockItem(block, blockItemProperties));
     }
 
-    private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, Function<T, ? extends BlockItem> blockItemFactory, boolean hasItemBlock)
+    private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, @Nullable Function<T, ? extends BlockItem> blockItemFactory)
     {
-        RegistryObject<T> block = BLOCKS.register(name, blockSupplier);
-        if (hasItemBlock)
+        RegistryObject<T> block = BLOCKS.register(name, Objects.requireNonNull(blockSupplier, "Tried to register null Block for " + name));
+        if (blockItemFactory != null)
         {
-            TFCItems.ITEMS.register(name, () -> blockItemFactory.apply(block.get()));
+            TFCItems.ITEMS.register(name, () -> Objects.requireNonNull(blockItemFactory.apply(block.get()), "Tried to register null BlockItem for " + name));
         }
         return block;
     }

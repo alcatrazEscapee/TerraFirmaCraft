@@ -3,8 +3,8 @@ package net.dries007.tfc.common.tileentity;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+
+import net.dries007.tfc.common.blocks.crop.ICropBlock;
 
 public class CropTileEntity extends TickCounterTileEntity
 {
@@ -21,7 +21,7 @@ public class CropTileEntity extends TickCounterTileEntity
     {
         super(type);
 
-        growthVariation = 1;
+        growthVariation = 1f;
         growth = 0;
         yield = 0;
     }
@@ -77,11 +77,14 @@ public class CropTileEntity extends TickCounterTileEntity
     }
 
     @Override
-    public void onLoad()
+    public boolean onTickDelta(long playerTickDelta)
     {
         if (level != null && !level.isClientSide())
         {
-            level.getBlockTicks().scheduleTick(worldPosition, getBlockState().getBlock(), 1);
+            BlockState state = getBlockState();
+            ((ICropBlock) state.getBlock()).growthTick(state, level, worldPosition, level.getRandom());
+            return true;
         }
+        return false;
     }
 }

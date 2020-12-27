@@ -1,11 +1,16 @@
 package net.dries007.tfc.common.blocks;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.shapes.VoxelShape;
+
+import static net.dries007.tfc.common.TFCItemGroup.EARTH;
 
 public enum GroundcoverBlockType
 {
@@ -56,5 +61,11 @@ public enum GroundcoverBlockType
     public Supplier<? extends Item> getVanillaItem()
     {
         return vanillaItem;
+    }
+
+    @Nullable
+    public Function<Block, ? extends BlockItem> createBlockItemFactory()
+    {
+        return vanillaItem == null ? block -> new BlockItem(block, new Item.Properties().tab(EARTH)) : null;
     }
 }

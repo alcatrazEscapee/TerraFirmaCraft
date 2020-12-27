@@ -47,7 +47,7 @@ import net.dries007.tfc.util.calendar.Calendars;
 import net.dries007.tfc.util.calendar.ICalendar;
 
 
-public abstract class CropBlock extends CropsBlock implements IHoeOverlayBlock
+public abstract class CropBlock extends CropsBlock implements IHoeOverlayBlock, ICropBlock
 {
     public static final BooleanProperty WILD = TFCBlockStateProperties.WILD;
 
@@ -201,15 +201,17 @@ public abstract class CropBlock extends CropsBlock implements IHoeOverlayBlock
     @Override
     public void addHoeOverlayInfo(IWorld world, BlockPos pos, BlockState state, List<ITextComponent> lines)
     {
-        BlockState belowState = world.getBlockState(pos.below());
+        final BlockPos belowPos = pos.below();
+        final BlockState belowState = world.getBlockState(belowPos);
         if (belowState.getBlock() instanceof IFarmlandBlock)
         {
             // Apply farmland tooltip after regular tooltip
-            ((IFarmlandBlock) belowState.getBlock()).addHoeOverlayInfo(world, pos.below(), state, lines);
+            ((IFarmlandBlock) belowState.getBlock()).addHoeOverlayInfo(world, belowPos, belowState, lines);
         }
     }
 
-    protected void growthTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand)
+    @Override
+    public void growthTick(BlockState state, World worldIn, BlockPos pos, Random rand)
     {
         // Non-wild crops must be growing on compatible farmland. Update the state of the below farmland first before doing any crop updates.
         final BlockPos belowPos = pos.below();

@@ -19,6 +19,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.dries007.tfc.util.Helpers;
 import net.dries007.tfc.util.collections.IWeighted;
+import net.dries007.tfc.util.collections.Weighted;
 
 /**
  * A collection of common codecs that reference vanilla code

@@ -3,6 +3,8 @@ package net.dries007.tfc.common.blocks.crop;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,6 +15,7 @@ import net.minecraft.state.EnumProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -55,6 +58,24 @@ public abstract class DoubleCropBlock extends CropBlock
         };
     }
 
+    /**
+     * Modified from {@link net.minecraft.block.DoublePlantBlock#preventCreativeDropFromBottomPart(World, BlockPos, BlockState, PlayerEntity)}
+     */
+    public static void preventCreativeDropFromBottomPart(World worldIn, BlockPos pos, BlockState state, PlayerEntity player)
+    {
+        Part part = state.getValue(PART);
+        if (part == Part.TOP)
+        {
+            final BlockPos belowPos = pos.below();
+            final BlockState belowState = worldIn.getBlockState(belowPos);
+            if (belowState.getBlock() == state.getBlock() && belowState.getValue(PART) == Part.BOTTOM)
+            {
+                worldIn.setBlock(belowPos, Blocks.AIR.defaultBlockState(), 35);
+                worldIn.levelEvent(player, 2001, belowPos, Block.getId(belowState));
+            }
+        }
+    }
+
     protected final int maxSingleAge;
 
     protected DoubleCropBlock(Properties properties, int maxSingleAge, int maxAge, Supplier<? extends Block> dead, Supplier<? extends Item> seeds, FarmlandTileEntity.NutrientType primaryNutrient)
@@ -63,6 +84,35 @@ public abstract class DoubleCropBlock extends CropBlock
 
         this.maxSingleAge = maxSingleAge;
         registerDefaultState(defaultBlockState().setValue(PART, Part.BOTTOM));
+    }
+
+    /**
+     * Copied from {@link net.minecraft.block.DoublePlantBlock#playerWillDestroy(World, BlockPos, BlockState, PlayerEntity)}
+     */
+    @Override
+    public void playerWillDestroy(World worldIn, BlockPos pos, BlockState state, PlayerEntity player)
+    {
+        if (!worldIn.isClientSide)
+        {
+            if (player.isCreative())
+            {
+                preventCreativeDropFromBottomPart(worldIn, pos, state, player);
+            }
+            else
+            {
+                dropResources(state, worldIn, pos, null, player, player.getMainHandItem());
+            }
+        }
+        super.playerWillDestroy(worldIn, pos, state, player);
+    }
+
+    /**
+     * Copied from {@link net.minecraft.block.DoublePlantBlock#playerDestroy(World, PlayerEntity, BlockPos, BlockState, TileEntity, ItemStack)}
+     */
+    @Override
+    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack)
+    {
+        super.playerDestroy(worldIn, player, pos, Blocks.AIR.defaultBlockState(), te, stack);
     }
 
     @Override
@@ -97,10 +147,10 @@ public abstract class DoubleCropBlock extends CropBlock
     }
 
     @Override
-    protected void growthTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand)
+    public void growthTick(BlockState state, World worldIn, BlockPos pos, Random rand)
     {
         // Only the bottom part should tick
-        if (state.getValue(AGE) < getMaxAge() && state.getValue(PART) == Part.BOTTOM)
+        if (state.getValue(getAgeProperty()) < getMaxAge() && state.getValue(PART) == Part.BOTTOM)
         {
             // Non-wild crops must be growing on compatible farmland. Update the state of the below farmland first before doing any crop updates.
             final BlockPos belowPos = pos.below();

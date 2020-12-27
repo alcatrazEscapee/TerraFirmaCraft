@@ -36,6 +36,7 @@ public class ServerConfig
     public final ForgeConfigSpec.BooleanValue enableLeavesSlowEntities;
     // Blocks - Plants
     public final ForgeConfigSpec.DoubleValue plantGrowthChance;
+    public final ForgeConfigSpec.IntValue bambooGrowthChance;
     // Blocks - Cobblestone
     public final ForgeConfigSpec.BooleanValue enableMossyRockSpreading;
     public final ForgeConfigSpec.IntValue mossyRockSpreadRate;
@@ -84,13 +85,14 @@ public class ServerConfig
         enableSnowAffectedByTemperature = builder.apply("enableSnowAffectedByTemperature").comment("If snow will melt in warm temperatures on random ticks").define("enableSnowAffectedByTemperature", true);
         enableSnowSlowEntities = builder.apply("enableSnowSlowEntities").comment("[Requires MC Restart] If snow will slow players that move on top of it similar to soul sand or honey.").define("enableSnowSlowEntities", true);
 
-        innerBuilder.pop().push("plants");
-
-        plantGrowthChance = builder.apply("plantGrowthChance").comment("Chance for a plant to grow each random tick, does not include crops. Lower = slower growth. Set to 0 to disable random plant growth.").defineInRange("plantGrowthChance", 0.05, 0, 1);
-
         innerBuilder.pop().push("leaves");
 
         enableLeavesSlowEntities = builder.apply("enableLeavesSlowEntities").comment("If leaves will slow entities passing through them and reduce fall damage.").define("enableLeavesSlowEntities", true);
+
+        innerBuilder.pop().push("plants");
+
+        plantGrowthChance = builder.apply("plantGrowthChance").comment("Chance for a plant to grow each random tick, does not include crops. Lower = slower growth. Set to 0 to disable random plant growth.").defineInRange("plantGrowthChance", 0.05, 0, 1);
+        bambooGrowthChance = builder.apply("bambooGrowthChance").comment("Chance for a (vanilla) bamboo plant to grow, on each normal growth tick. Higher = slower growth. Setting to 1 would be vanilla behavior. Set to 0 to disable bamboo growth completely.").defineInRange("bambooGrowthChance", 6, 0, Integer.MAX_VALUE);
 
         innerBuilder.pop().push("cobblestone");
 

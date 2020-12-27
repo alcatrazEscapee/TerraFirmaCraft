@@ -14,6 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IReloadableResourceManager;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -333,6 +334,15 @@ public final class ForgeEventHandler
     }
 
     @SubscribeEvent
+    public static void onWorldUnload(WorldEvent.Unload event)
+    {
+        if (event.getWorld() instanceof World)
+        {
+            ((World) event.getWorld()).getCapability(WorldTrackerCapability.CAPABILITY).invalidate();
+        }
+    }
+
+    @SubscribeEvent
     public static void onExplosionDetonate(ExplosionEvent.Detonate event)
     {
         if (!event.getWorld().isClientSide)
@@ -413,6 +423,23 @@ public final class ForgeEventHandler
         {
             event.setResult(Event.Result.DENY);
             event.setCanceled(true);
+        }
+    }
+
+    /**
+     * Modifications for vanilla plants growth rates.
+     * @param event {@link net.minecraftforge.event.world.BlockEvent.CropGrowEvent}
+     */
+    @SubscribeEvent
+    public static void onCropsGrowPre(BlockEvent.CropGrowEvent.Pre event)
+    {
+        if (event.getState().getBlock().is(Blocks.BAMBOO))
+        {
+            int chance = TFCConfig.SERVER.bambooGrowthChance.get();
+            if (chance == 0 || event.getWorld().getRandom().nextInt(chance) != 0)
+            {
+                event.setResult(Event.Result.DENY);
+            }
         }
     }
 }

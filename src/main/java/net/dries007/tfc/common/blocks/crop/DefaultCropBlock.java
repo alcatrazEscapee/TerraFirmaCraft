@@ -34,10 +34,4 @@ public abstract class DefaultCropBlock extends CropBlock
     {
         super(properties, maxAge, dead, seeds, primaryNutrient);
     }
-
-    @Override
-    protected void growthTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand)
-    {
-        super.growthTick(state, worldIn, pos, rand);
-    }
 }
