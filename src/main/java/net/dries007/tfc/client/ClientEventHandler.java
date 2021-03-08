@@ -13,25 +13,32 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.entity.FallingBlockRenderer;
-import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.item.Item;
 import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
+import net.dries007.tfc.client.particle.BubbleParticle;
+import net.dries007.tfc.client.particle.SteamParticle;
+import net.dries007.tfc.client.particle.TFCParticleTypes;
+import net.dries007.tfc.client.render.GrillTileEntityRenderer;
+import net.dries007.tfc.client.render.PitKilnTileEntityRenderer;
+import net.dries007.tfc.client.render.PlacedItemTileEntityRenderer;
+import net.dries007.tfc.client.render.PotTileEntityRenderer;
 import net.dries007.tfc.client.screen.CalendarScreen;
 import net.dries007.tfc.client.screen.ClimateScreen;
 import net.dries007.tfc.client.screen.NutritionScreen;
@@ -41,9 +48,9 @@ import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.common.container.TFCContainerTypes;
 import net.dries007.tfc.common.entities.TFCEntities;
 import net.dries007.tfc.common.fluids.TFCFluids;
+import net.dries007.tfc.common.tileentity.TFCTileEntities;
 import net.dries007.tfc.common.types.Rock;
 import net.dries007.tfc.common.types.Wood;
-import net.dries007.tfc.mixin.client.world.DimensionRenderInfoAccessor;
 import net.dries007.tfc.mixin.world.biome.BiomeColorsAccessor;
 
 import static net.dries007.tfc.TerraFirmaCraft.MOD_ID;
@@ -62,6 +69,13 @@ public final class ClientEventHandler
         ScreenManager.register(TFCContainerTypes.CALENDAR.get(), CalendarScreen::new);
         ScreenManager.register(TFCContainerTypes.NUTRITION.get(), NutritionScreen::new);
         ScreenManager.register(TFCContainerTypes.CLIMATE.get(), ClimateScreen::new);
+        ScreenManager.register(TFCContainerTypes.FIREPIT.get(), FirepitScreen::new);
+        ScreenManager.register(TFCContainerTypes.GRILL.get(), GrillScreen::new);
+        ScreenManager.register(TFCContainerTypes.POT.get(), PotScreen::new);
+        ScreenManager.register(TFCContainerTypes.LOG_PILE.get(), LogPileScreen::new);
+
+        // Keybindings
+        ClientRegistry.registerKeyBinding(TFCKeybindings.PLACE_BLOCK);
 
         // Render Types
         final RenderType cutout = RenderType.cutout();
@@ -96,6 +110,23 @@ public final class ClientEventHandler
         // Plants
         TFCBlocks.PLANTS.values().forEach(reg -> RenderTypeLookup.setRenderLayer(reg.get(), cutout));
         TFCBlocks.CORAL.values().forEach(map -> map.values().forEach(reg -> RenderTypeLookup.setRenderLayer(reg.get(), cutout)));
+        TFCBlocks.SPREADING_BUSHES.values().forEach(bush -> RenderTypeLookup.setRenderLayer(bush.get(), cutoutMipped));
+        TFCBlocks.SPREADING_CANES.values().forEach(bush -> RenderTypeLookup.setRenderLayer(bush.get(), cutoutMipped));
+        TFCBlocks.STATIONARY_BUSHES.values().forEach(bush -> RenderTypeLookup.setRenderLayer(bush.get(), cutoutMipped));
+        TFCBlocks.WATERLOGGED_BUSHES.values().forEach(bush -> RenderTypeLookup.setRenderLayer(bush.get(), cutoutMipped));
+        RenderTypeLookup.setRenderLayer(TFCBlocks.DEAD_BERRY_BUSH.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.DEAD_CANE.get(), cutout);
+        TFCBlocks.FRUIT_TREE_LEAVES.values().forEach(leaves -> RenderTypeLookup.setRenderLayer(leaves.get(), cutoutMipped));
+        TFCBlocks.FRUIT_TREE_SAPLINGS.values().forEach(leaves -> RenderTypeLookup.setRenderLayer(leaves.get(), cutout));
+        RenderTypeLookup.setRenderLayer(TFCBlocks.BANANA_PLANT.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.BANANA_SAPLING.get(), cutout);
+
+        // Other
+        RenderTypeLookup.setRenderLayer(TFCBlocks.FIREPIT.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.TORCH.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.WALL_TORCH.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.DEAD_TORCH.get(), cutout);
+        RenderTypeLookup.setRenderLayer(TFCBlocks.DEAD_WALL_TORCH.get(), cutout);
 
         // Fluids
         RenderTypeLookup.setRenderLayer(TFCFluids.SALT_WATER.getFlowing(), translucent);
@@ -105,6 +136,13 @@ public final class ClientEventHandler
 
         // Entity Rendering
         RenderingRegistry.registerEntityRenderingHandler(TFCEntities.FALLING_BLOCK.get(), FallingBlockRenderer::new);
+
+        // TE Rendering
+
+        ClientRegistry.bindTileEntityRenderer(TFCTileEntities.POT.get(), PotTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(TFCTileEntities.GRILL.get(), GrillTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(TFCTileEntities.PLACED_ITEM.get(), PlacedItemTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(TFCTileEntities.PIT_KILN.get(), PitKilnTileEntityRenderer::new);
 
         // Misc
         BiomeColorsAccessor.accessor$setWaterColorResolver(TFCColors.FRESH_WATER);
@@ -146,13 +184,15 @@ public final class ClientEventHandler
     @SubscribeEvent
     public static void registerColorHandlerItems(ColorHandlerEvent.Item event)
     {
-        LOGGER.debug("Registering Color Handler Blocks");
+        LOGGER.debug("Registering Color Handler Items");
         final ItemColors registry = event.getItemColors();
 
         Item[] leafyPlants = Stream.of(Plant.values()).filter(Plant::isLeafColored).map(p -> TFCBlocks.PLANTS.get(p).get().asItem()).toArray(Item[]::new);
         Item[] grassyPlants = Stream.of(Plant.values()).filter(Plant::needsItemColor).map(p -> TFCBlocks.PLANTS.get(p).get().asItem()).toArray(Item[]::new);
         registry.register((itemStack, tintIndex) -> TFCColors.getGrassColor(new BlockPos(0, 96, 0), tintIndex), grassyPlants);
         registry.register((itemStack, tintIndex) -> TFCColors.getFoliageColor(new BlockPos(0, 96, 0), tintIndex), leafyPlants);
+
+        TFCBlocks.WOODS.forEach((key, value) -> registry.register((itemStack, tintIndex) -> TFCColors.getFoliageColor(new BlockPos(0, 96, 0), tintIndex), value.get(Wood.BlockType.FALLEN_LEAVES).get().asItem()));
     }
 
     @SubscribeEvent
@@ -175,5 +215,9 @@ public final class ClientEventHandler
         resourceManager.registerReloadListener(new ColorMapReloadListener(TFCColors::setFoliageColors, TFCColors.FOLIAGE_COLORS_LOCATION));
         resourceManager.registerReloadListener(new ColorMapReloadListener(TFCColors::setFoliageFallColors, TFCColors.FOLIAGE_FALL_COLORS_LOCATION));
         resourceManager.registerReloadListener(new ColorMapReloadListener(TFCColors::setFoliageWinterColors, TFCColors.FOLIAGE_WINTER_COLORS_LOCATION));
+
+        ParticleManager particleEngine = Minecraft.getInstance().particleEngine;
+        particleEngine.register(TFCParticleTypes.BUBBLE.get(), BubbleParticle.Factory::new);
+        particleEngine.register(TFCParticleTypes.STEAM.get(), SteamParticle.Factory::new);
     }
 }
