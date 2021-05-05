@@ -6,6 +6,7 @@
 
 package net.dries007.tfc.world.biome;
 
+import net.minecraft.util.FastRandom;
 import net.minecraft.util.math.MathHelper;
 
 import net.dries007.tfc.world.IBiomeNoiseSampler;
@@ -116,6 +117,82 @@ public final class BiomeNoise
                     return easing * cliffNoise.noise(x, y, z);
                 }
                 return FULL;
+            }
+        };
+    }
+
+    public static IBiomeNoiseSampler tidalShoreSampler(long seed)
+    {
+        final INoise2D blobsNoise = new OpenSimplex2D(seed).spread(0.01f).abs();
+
+        final INoise2D plateauNoise = new OpenSimplex2D(seed = next(seed)).octaves(4).spread(0.2f).scaled(SEA_LEVEL + 8, SEA_LEVEL + 20);
+
+        final INoise2D warpX = new OpenSimplex2D(seed = next(seed)).octaves(2).spread(0.015f).scaled(-30, 30);
+        final INoise2D warpZ = new OpenSimplex2D(seed = next(seed)).octaves(2).spread(0.015f).scaled(-30, 30);
+        final INoise2D oceanNoise = new OpenSimplex2D(seed = next(seed)).octaves(4).spread(0.11f).warped(warpX, warpZ).scaled(SEA_LEVEL + -10, SEA_LEVEL + 2);
+
+        final INoise2D centerNoise = new OpenSimplex2D(seed = next(seed)).scaled(-2, 2);
+
+        final float t1 = 0.65f;
+        final float t2 = 0.5f;
+
+        return new IBiomeNoiseSampler() {
+            private float height, blobs, midpointHeight, threshold;
+
+            @Override
+            public void setColumn(int x, int z)
+            {
+                blobs = blobsNoise.noise(x * 3f, z * 3f);
+                float plateauHeight = plateauNoise.noise(x, z);
+                float oceanHeight = oceanNoise.noise(x, z);
+                midpointHeight = 0.7f * plateauHeight + 0.3f * oceanHeight + centerNoise.noise(x, z);
+                if (blobs > t1)
+                {
+                    height = plateauHeight;
+                }
+                else if (blobs > t2)
+                {
+                    height = plateauHeight;
+
+                    float t = (blobs - t2) / (t1 - t2);
+                    t = 1 - t;
+                    t *= 1.2f;
+                    if (t > 1)
+                    {
+                        t = 1;
+                    }
+                    t *= 15;
+                    threshold = t;
+                }
+                else
+                {
+                    height = plateauHeight;
+                }
+            }
+
+            @Override
+            public double height()
+            {
+                return height;
+            }
+
+            @Override
+            public double noise(int y)
+            {
+                if (blobs > t1)
+                {
+                    return 0;
+                }
+                else if (blobs > t2)
+                {
+                    if (y > height)
+                    {
+                        return 0;
+                    }
+                    float delta = Math.abs(midpointHeight - y);
+                    return MathHelper.clamp(0.4f + 0.05f * (threshold - delta), 0, 1);
+                }
+                return y > SEA_LEVEL - 5 ? 1 : 0;
             }
         };
     }
@@ -262,5 +339,10 @@ public final class BiomeNoise
                 return MathHelper.clamp(0.4f + 0.05f * (height - delta), 0, 1);
             }
         };
+    }
+
+    private static long next(long seed)
+    {
+        return FastRandom.next(seed, 1337L);
     }
 }

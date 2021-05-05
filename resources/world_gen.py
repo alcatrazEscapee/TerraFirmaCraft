@@ -535,7 +535,7 @@ def generate(rm: ResourceManager):
             biome(rm, 'deep_ocean_trench', temp, rain, 'ocean', 'tfc:normal', spawnable=False, ocean_carvers=True, ocean_features=True)
             biome(rm, 'river', temp, rain, 'river', 'tfc:normal', spawnable=False)
             biome(rm, 'shore', temp, rain, 'beach', 'tfc:shore', spawnable=False, ocean_features=True)
-
+            biome(rm, 'tidal_shore', temp, rain, 'extreme_hills', 'tfc:mountains', spawnable=False, boulders=True, ocean_features=True)
             biome(rm, 'mountain_river', temp, rain, 'extreme_hills', 'tfc:mountains', spawnable=False)
             biome(rm, 'volcanic_mountain_river', temp, rain, 'extreme_hills', 'tfc:volcanic_mountains', spawnable=False, volcano_features=True)
             biome(rm, 'old_mountain_river', temp, rain, 'extreme_hills', 'tfc:mountains', spawnable=False)

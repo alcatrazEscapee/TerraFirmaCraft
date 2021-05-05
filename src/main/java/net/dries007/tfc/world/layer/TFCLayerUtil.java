@@ -86,6 +86,7 @@ public class TFCLayerUtil
     public static final int VOLCANIC_OCEANIC_MOUNTAINS;
     public static final int CANYONS;
     public static final int SHORE;
+    public static final int TIDAL_SHORE;
     public static final int LAKE;
     public static final int RIVER;
     public static final int MOUNTAIN_RIVER;
@@ -133,6 +134,7 @@ public class TFCLayerUtil
         VOLCANIC_OCEANIC_MOUNTAINS = register(TFCBiomes.VOLCANIC_OCEANIC_MOUNTAINS);
         CANYONS = register(TFCBiomes.CANYONS);
         SHORE = register(TFCBiomes.SHORE);
+        TIDAL_SHORE = register(TFCBiomes.TIDAL_SHORE);
         LAKE = register(TFCBiomes.LAKE);
         RIVER = register(TFCBiomes.RIVER);
         MOUNTAIN_RIVER = register(TFCBiomes.MOUNTAIN_RIVER);
@@ -384,6 +386,10 @@ public class TFCLayerUtil
 
     public static int shoreFor(int value)
     {
+        if (value == OLD_MOUNTAINS || value == PLATEAU)
+        {
+            return TIDAL_SHORE;
+        }
         return SHORE;
     }
 

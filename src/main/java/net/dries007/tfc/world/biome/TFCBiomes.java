@@ -65,6 +65,7 @@ public final class TFCBiomes
 
     // Shores
     public static final BiomeVariants SHORE = register("shore", builder().heightmap(BiomeNoise::shore).group(BiomeVariants.Group.OCEAN).salty().types(BiomeDictionary.Type.BEACH)); // Standard shore / beach. Material will vary based on location
+    public static final BiomeVariants TIDAL_SHORE = register("tidal_shore", builder().noise(BiomeNoise::tidalShoreSampler).salty().types(BiomeDictionary.Type.BEACH, BiomeDictionary.Type.PLATEAU, BiomeDictionary.Type.OCEAN));
 
     // Water
     public static final BiomeVariants LAKE = register("lake", builder().heightmap(BiomeNoise::lake).group(BiomeVariants.Group.LAKE).types(BiomeDictionary.Type.RIVER));
